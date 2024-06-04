@@ -1,0 +1,44 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Build stack images and create gcr.io/buildpacks/builder.
+#
+# NOTE: This only works inside a Bazel workspace.
+#
+# GCB config for building all the base images defined in the /stacks directory. It should be
+# submitted from the project root directory and provided with a `_CANDIDATE_NAME` substitution
+# that serves as a unique identifier of the images:
+#
+#   $ gcloud builds submit --config=tools/cloudbuild/create_stacks.yaml \
+#      --substitutions _CANDIDATE_NAME=my-local-build _ACCOUNT_NAME=keyless
+
+steps:
+  - id: publish-ar-images
+    name: gcr.io/go-containerregistry/crane:debug
+    entrypoint: "/busybox/sh"
+    args: ['/tools/cloudbuild/myscript.sh']
+    automapSubstitutions: true
+
+substitutions:
+  _CANDIDATE_NAME: localbuild
+  _ACCOUNT_NAME: keyless
+
+timeout: '10800s'
+
+options:
+  machineType: 'N1_HIGHCPU_32'
+  logging: CLOUD_LOGGING_ONLY
+
+serviceAccount:
+  projects/$PROJECT_ID/serviceAccounts/${_ACCOUNT_NAME}@$PROJECT_ID.iam.gserviceaccount.com
