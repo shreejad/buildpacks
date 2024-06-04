@@ -27,7 +27,7 @@ steps:
   - id: publish-ar-images
     name: gcr.io/go-containerregistry/crane:debug
     entrypoint: "/busybox/sh"
-    args: ['ls']
+    args: ['tools/cloudbuild/myscript.sh']
     automapSubstitutions: true
 
 substitutions:
