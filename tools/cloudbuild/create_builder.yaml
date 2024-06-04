@@ -237,6 +237,12 @@ steps:
     waitFor:
       - google22_builder_sbom
 
+  - id: publish-ar-images
+    name: gcr.io/cloud-builders/docker
+    script: |
+      docker build -t us-west2-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1 .
+    automapSubstitutions: true
+
 # Even though a :latest tag is published, it may be unstable and may be phased out eventually.
 # We recommend using the :v1 tag.
 images:
@@ -262,6 +268,7 @@ images:
   - 'gcr.io/$PROJECT_ID/firebase-app-hosting-22/run:$COMMIT_SHA'
   - 'gcr.io/$PROJECT_ID/firebase-app-hosting-22/builder:latest'
   - 'gcr.io/$PROJECT_ID/firebase-app-hosting-22/builder:$COMMIT_SHA'
+  - 'us-west2-docker.pkg.dev/$PROJECT_ID/quickstart-docker-repo/quickstart-image:tag1'
 
 substitutions:
   _CANDIDATE_NAME: localbuild
